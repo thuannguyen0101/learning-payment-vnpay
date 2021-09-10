@@ -133,10 +133,8 @@
                 alert('thanh cong')
             },
             errors: function () {
-
             }
         })
-        window.location.reload();
     }
     $(function () {
         $('.addToCart').on('click', addToCart)

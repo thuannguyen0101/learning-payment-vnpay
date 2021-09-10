@@ -48,6 +48,7 @@ Route::get('addToCart/{id}', [OrderController::class, 'addToCart'])->name('addTo
 Route::get('remove/{id}', [OrderController::class, 'remove']);
 Route::post('/test/order', [OrderController::class, 'update'])->name('update');
 Route::get('/buy', [OrderController::class, 'buynow'])->name('buy');
+Route::get('/response', [OrderController::class, 'response']);
 
 //template admin
 
