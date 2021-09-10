@@ -23,7 +23,7 @@ class  OrderController extends Controller
 
     public function index()
     {
-
+        Cart::add(1, 'Bí đỏ hồ lô', 5, 9750, 100, ['thumbnail' => 'http://res.cloudinary.com/quando213/image/upload/v1630746030/gatgatexpress/z2397714459635_678eba187af4f0c9fea558852ab9601e_761390139f014619820f7dc1e892ad68_1024x1024_rejmtx.jpg']);
 
         return view('Admin.Order.list', [
             'title' => 'Product',
