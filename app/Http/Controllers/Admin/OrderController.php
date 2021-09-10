@@ -24,7 +24,6 @@ class  OrderController extends Controller
     public function index()
     {
         Cart::add(1, 'Bí đỏ hồ lô', 5, 9750, 100, ['thumbnail' => 'http://res.cloudinary.com/quando213/image/upload/v1630746030/gatgatexpress/z2397714459635_678eba187af4f0c9fea558852ab9601e_761390139f014619820f7dc1e892ad68_1024x1024_rejmtx.jpg']);
-
         return view('Admin.Order.list', [
             'title' => 'Product',
             'breadcrumb' => 'Edit Product',
@@ -82,16 +81,12 @@ class  OrderController extends Controller
         $order->updated_at = Carbon::now();
         $order->status = 1;
         $order->save();
-
-
-
-
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "https://sem2-project.herokuapp.com/response";
         $vnp_TmnCode = "OV95A0Y9";
         $vnp_HashSecret = "ZGZKUWRMIPLAZFFGCMMRDRTQUKFOMGLS";
-        $vnp_TxnRef = "#AC0001";
-        $vnp_OrderInfo = "Thanh toan don hang " . $order->id;
+        $vnp_TxnRef = $order->id;
+        $vnp_OrderInfo = "Thanh toan don hang ";
         $vnp_OrderType = "billpayment";
         $vnp_Amount = $floatVar * 100;
         $vnp_Locale = "vn";
@@ -119,9 +114,9 @@ class  OrderController extends Controller
         $hashdata = "";
         foreach ($inputData as $key => $value) {
             if ($i == 1) {
-                $hashdata .= '&' . $key . "=" . $value;
+                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
             } else {
-                $hashdata .= $key . "=" . $value;
+                $hashdata .= urlencode($key) . "=" . urlencode($value);
                 $i = 1;
             }
             $query .= urlencode($key) . "=" . urlencode($value) . '&';
@@ -129,15 +124,15 @@ class  OrderController extends Controller
 
         $vnp_Url = $vnp_Url . "?" . $query;
         if (isset($vnp_HashSecret)) {
-            $vnpSecureHash = hash('sha256', $vnp_HashSecret . $hashdata);
-            $vnp_Url .= 'vnp_SecureHashType=SHA256&vnp_SecureHash=' . $vnpSecureHash;
+            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//
+            $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
-        return redirect($vnp_Url) ;
+        return redirect($vnp_Url);
     }
 
-    public function response()
+    public function response(Request $request)
     {
-
+        return $request;
     }
 
 }
