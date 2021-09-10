@@ -103,7 +103,7 @@
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <a class="addToCart btn btn-primary mt-auto"
-                                   data-url="{{route('addToCart',['id'=>$list->id])}}">Add to cart</a>
+                                   data-url="{{route('addtocart',['id'=>$list->id])}}">Add to cart</a>
                             </div>
                         </div>
                     </div>
