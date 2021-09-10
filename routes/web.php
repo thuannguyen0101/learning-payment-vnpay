@@ -44,7 +44,7 @@ Route::get('/login', function () {
 
 Route::get('/test', [OrderController::class, 'test']);
 Route::get('/test/order', [OrderController::class, 'detail']);
-Route::get('addtocart/{id}', [OrderController::class, 'addToCart'])->name('addToCart');
+Route::get('addtocart/{id}', [OrderController::class, 'addToCart'])->name('addtocart');
 Route::get('remove/{id}', [OrderController::class, 'remove']);
 Route::post('/test/order', [OrderController::class, 'update'])->name('update');
 Route::get('/buy', [OrderController::class, 'buynow'])->name('buy');
