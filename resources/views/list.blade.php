@@ -148,10 +148,53 @@
         </tr>
         </tbody>
     </table>
-    <div>
-        <a href="/buy" type="button" class="btn btn-primary">Buy</a>
-        <div id="paypal-button-container"></div>
-    </div>
+    <form action="">
+        @csrf
+        <div class="form-group">
+            <label for="bankcode">Ngân hàng</label>
+            <select name="bankcode" id="bankcode" class="form-control">
+                <option value="">Không chọn </option>
+                <option value="VNPAYQR">VNPAYQR</option>
+                <option value="VNBANK">LOCAL BANK</option>
+                <option value="IB">INTERNET BANKING</option>
+                <option value="ATM">ATM CARD</option>
+                <option value="INTCARD">INTERNATIONAL CARD</option>
+                <option value="VISA">VISA</option>
+                <option value="MASTERCARD"> MASTERCARD</option>
+                <option value="JCB">JCB</option>
+                <option value="UPI">UPI</option>
+                <option value="VIB">VIB</option>
+                <option value="VIETCAPITALBANK">VIETCAPITALBANK</option>
+                <option value="SCB">Ngan hang SCB</option>
+                <option value="NCB">Ngan hang NCB</option>
+                <option value="SACOMBANK">Ngan hang SacomBank  </option>
+                <option value="EXIMBANK">Ngan hang EximBank </option>
+                <option value="MSBANK">Ngan hang MSBANK </option>
+                <option value="NAMABANK">Ngan hang NamABank </option>
+                <option value="VNMART"> Vi dien tu VnMart</option>
+                <option value="VIETINBANK">Ngan hang Vietinbank  </option>
+                <option value="VIETCOMBANK">Ngan hang VCB </option>
+                <option value="HDBANK">Ngan hang HDBank</option>
+                <option value="DONGABANK">Ngan hang Dong A</option>
+                <option value="TPBANK">Ngân hàng TPBank </option>
+                <option value="OJB">Ngân hàng OceanBank</option>
+                <option value="BIDV">Ngân hàng BIDV </option>
+                <option value="TECHCOMBANK">Ngân hàng Techcombank </option>
+                <option value="VPBANK">Ngan hang VPBank </option>
+                <option value="AGRIBANK">Ngan hang Agribank </option>
+                <option value="MBBANK">Ngan hang MBBank </option>
+                <option value="ACB">Ngan hang ACB </option>
+                <option value="OCB">Ngan hang OCB </option>
+                <option value="IVB">Ngan hang IVB </option>
+                <option value="SHB">Ngan hang SHB </option>
+            </select>
+        </div>
+        <div>
+            <a href="/buy" type="button" class="btn btn-primary">Buy</a>
+            <div id="paypal-button-container"></div>
+        </div>
+    </form>
+
 </div>
 
 <!-- Footer-->

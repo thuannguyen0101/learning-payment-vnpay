@@ -23,6 +23,8 @@ class  OrderController extends Controller
 
     public function index()
     {
+
+
         return view('Admin.Order.list', [
             'title' => 'Product',
             'breadcrumb' => 'Edit Product',
@@ -49,11 +51,10 @@ class  OrderController extends Controller
     {
         $row = Cart::get($request->rowId);
 
-        if ($row->qty < 100 && $request->qty < 100){
-            Cart::update($request->rowId,$row->qty = $request->qty);
-        }
-        else{
-            return redirect('/test/order')->with('message','lỗi');
+        if ($row->qty < 100 && $request->qty < 100) {
+            Cart::update($request->rowId, $row->qty = $request->qty);
+        } else {
+            return redirect('/test/order')->with('message', 'lỗi');
         }
         return redirect('/test/order');
     }
@@ -63,10 +64,12 @@ class  OrderController extends Controller
         Cart::remove($rowId);
         return redirect('/test/order');
     }
+
     public function buynow(Request $request)
     {
         $order = new Order();
         $order->total_price = Cart::total();
+        $floatVar = (float)Cart::total() * 1000 ;
         $order->user_id = 1;
         $order->shipping_name = 'Nguyễn Ngọc Thuận';
         $order->shipping_district_id = 1;
@@ -79,30 +82,24 @@ class  OrderController extends Controller
         $order->updated_at = Carbon::now();
         $order->status = 1;
         $order->save();
-        foreach (Cart::content() as $item) {
-            $order_detail = new Orderdetail();
-            $order_detail->order_id = $order->id;
-            $order_detail->product_id = $item->id;
-            $order_detail->unit_price = $item->subtotal();
-            $order_detail->quantity = $item->qty;
-            $order_detail->save();
-        }
 
-        session(['cost_id' => $request->id]);
-        session(['url_prev' => url()->previous  ()]);
-        $vnp_TmnCode = "UDOPNWS1";
-        $vnp_HashSecret = "EBAHADUGCOEWYXCMYZRMTMLSHGKNRPBN";
-        $vnp_Url = "http://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:8000/return-vnpay";
-        $vnp_TxnRef = date("YmdHis");
-        $vnp_OrderInfo = "Thanh toán hóa đơn phí dich vụ";
-        $vnp_OrderType = 'billpayment';
-        $vnp_Amount = $request->input('amount') * 100;
-        $vnp_Locale = 'vn';
+
+
+
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        $vnp_Returnurl = "https://sem2-project.herokuapp.com/response";
+        $vnp_TmnCode = "OV95A0Y9";
+        $vnp_HashSecret = "ZGZKUWRMIPLAZFFGCMMRDRTQUKFOMGLS";
+        $vnp_TxnRef = "#AC0001";
+        $vnp_OrderInfo = "Thanh toan don hang " . $order->id;
+        $vnp_OrderType = "billpayment";
+        $vnp_Amount = $floatVar * 100;
+        $vnp_Locale = "vn";
+        $vnp_BankCode = "NCB";
         $vnp_IpAddr = request()->ip();
 
         $inputData = array(
-            "vnp_Version" => "2.0.0",
+            "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
             "vnp_Amount" => $vnp_Amount,
             "vnp_Command" => "pay",
@@ -114,11 +111,8 @@ class  OrderController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
+            'vnp_BankCode'=>$vnp_BankCode
         );
-
-        if (isset($vnp_BankCode) && $vnp_BankCode != "") {
-            $inputData['vnp_BankCode'] = $vnp_BankCode;
-        }
         ksort($inputData);
         $query = "";
         $i = 0;
@@ -135,14 +129,14 @@ class  OrderController extends Controller
 
         $vnp_Url = $vnp_Url . "?" . $query;
         if (isset($vnp_HashSecret)) {
-            // $vnpSecureHash = md5($vnp_HashSecret . $hashdata);
             $vnpSecureHash = hash('sha256', $vnp_HashSecret . $hashdata);
             $vnp_Url .= 'vnp_SecureHashType=SHA256&vnp_SecureHash=' . $vnpSecureHash;
         }
-        return redirect($vnp_Url);
+        return redirect($vnp_Url) ;
     }
 
-    public function response(){
+    public function response()
+    {
 
     }
 
