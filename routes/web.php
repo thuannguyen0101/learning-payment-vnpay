@@ -49,7 +49,7 @@ Route::get('remove/{id}', [OrderController::class, 'remove']);
 Route::post('/test/order', [OrderController::class, 'update'])->name('update');
 Route::get('/buy', [OrderController::class, 'buynow'])->name('buy');
 Route::get('/response', [OrderController::class, 'response']);
-Route::get('/ipn', [OrderController::class, 'ipn']);
+Route::get('/ipn', [OrderController::class, 'ipnResponse']);
 Route::get('/order/{id}', [OrderController::class, 'testIpn']);
 
 //template admin

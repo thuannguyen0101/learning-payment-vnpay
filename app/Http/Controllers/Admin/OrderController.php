@@ -134,13 +134,11 @@ class  OrderController extends Controller
 
     public function response(Request $request)
     {
-        return $order = Order::find($request->vnp_TxnRef);
+        return $request;
     }
-    public function ipn(Request $request)
+    public function ipnResponse(Request $request)
     {
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "https://sem2-project.herokuapp.com/response";
-        $vnp_TmnCode = "OV95A0Y9";
         $vnp_HashSecret = "ZGZKUWRMIPLAZFFGCMMRDRTQUKFOMGLS";
         $inputData = array();
         $returnData = array();
@@ -149,8 +147,8 @@ class  OrderController extends Controller
                 $inputData[$key] = $value;
             }
         }
-        $vnp_SecureHash = $inputData['vnp_SecureHash'];
-        unset($inputData['vnp_SecureHash']);
+        $vnp_SecureHash = $request->vnp_SecureHash;
+//        unset($inputData['vnp_SecureHash']);
         ksort($inputData);
         $i = 0;
         $hashData = "";
@@ -162,34 +160,27 @@ class  OrderController extends Controller
                 $i = 1;
             }
         }
-
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-        $vnpTranId = $inputData['vnp_TransactionNo'];
-        $vnp_BankCode = $inputData['vnp_BankCode'];
+//        $vnpTranId = $inputData['vnp_TransactionNo'];
+//        $vnp_BankCode = $inputData['vnp_BankCode'];
         $vnp_Amount = $inputData['vnp_Amount']/100;
         $order = Order::find($request->vnp_TxnRef);
-
+        $floatVar = floatval(preg_replace("/[^-0-9\.]/","",$order->total_price));
         try {
-
             if ($secureHash == $vnp_SecureHash) {
-                $floatVar = floatval(preg_replace("/[^-0-9\.]/","",$order->total_price));
                 if ($order != NULL) {
                     if($floatVar == $vnp_Amount)
                     {
                         if ($order->payment_method != NULL && $order->payment_method == 0) {
                             if ($request->vnp_ResponseCode == '00' || $request->vnp_TransactionStatus == '00') {
-                                $Status = 1;
-                            } else {
-                                $Status = 2;
-                            }
-                            if ($Status = 1){
                                 $order->update(['payment_method'=>1]);
                                 $order->save();
                                 $returnData['RspCode'] = '00';
                                 $returnData['Message'] = 'Confirm Success';
                                 return redirect( $vnp_Url . "?" . $returnData);
+                            } else {
+                                $Status = 2;
                             }
-
                         } else {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Order already confirmed';
@@ -219,7 +210,7 @@ class  OrderController extends Controller
         return redirect()->route('order',$order->id);
     }
     public function testIpn($id){
-        return Order::find($id);
+        $order = Order::find($id);
     }
 
 
