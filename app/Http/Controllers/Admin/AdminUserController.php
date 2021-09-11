@@ -23,6 +23,7 @@ class AdminUserController extends Controller
             'breadcrumb'=>'List Users'
         ]);
     }
+
     public function create(){
         $district = District::query()->orderBy('name','asc')->get();
         $group = Group::query()->orderBy('name','asc')->get();
@@ -34,6 +35,7 @@ class AdminUserController extends Controller
             'breadcrumb'=>'Create User'
         ]);
     }
+
     public function store(AdminUserPostRequest $request){
         $user = new User();
         $user->fill($request->validated());
@@ -41,11 +43,13 @@ class AdminUserController extends Controller
         $user->save();
         return redirect()->route('userList')->with('message','Tao mới thành công người dùng '.$user->first_name .' '.$user->last_name);
     }
+
     public function destroy($id){
         $user = User::find($id);
         $user->delete();
         return redirect()->route('userList')->with('message','Xóa thành công người dùng '.$user->first_name .' '.$user->last_name);
     }
+
     public function update($id){
         $data = User::find($id);
         $key = ($data->ward_id);
@@ -62,6 +66,7 @@ class AdminUserController extends Controller
 
         ]);
     }
+
     public function save(UpdateIn4PostRequest $request,$id){
         $user = User::find($id);
         $user->update($request->validated());

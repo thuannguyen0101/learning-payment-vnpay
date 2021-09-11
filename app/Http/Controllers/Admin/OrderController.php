@@ -68,7 +68,7 @@ class  OrderController extends Controller
     {
         $order = new Order();
         $order->total_price = Cart::total();
-        $floatVar = floatval(preg_replace("/[^-0-9\.]/","",Cart::total()));
+        $floatVar = floatval(preg_replace("/[^-0-9\.]/", "", Cart::total()));
         $order->user_id = 1;
         $order->shipping_name = 'Nguyễn Ngọc Thuận';
         $order->shipping_district_id = 1;
@@ -81,7 +81,6 @@ class  OrderController extends Controller
         $order->updated_at = Carbon::now();
         $order->status = 1;
         $order->save();
-
 
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "https://sem2-project.herokuapp.com/response";
@@ -108,7 +107,7 @@ class  OrderController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
-            'vnp_BankCode'=>$vnp_BankCode
+            'vnp_BankCode' => $vnp_BankCode
         );
         ksort($inputData);
         $query = "";
@@ -126,7 +125,7 @@ class  OrderController extends Controller
 
         $vnp_Url = $vnp_Url . "?" . $query;
         if (isset($vnp_HashSecret)) {
-            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);//
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
         return redirect($vnp_Url);
@@ -136,6 +135,7 @@ class  OrderController extends Controller
     {
         return $request;
     }
+
     public function ipnResponse(Request $request)
     {
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
@@ -147,8 +147,8 @@ class  OrderController extends Controller
                 $inputData[$key] = $value;
             }
         }
-        $vnp_SecureHash = $request->vnp_SecureHash;
-//        unset($inputData['vnp_SecureHash']);
+        $vnp_SecureHash = $inputData['vnp_SecureHash'];
+        unset($inputData['vnp_SecureHash']);
         ksort($inputData);
         $i = 0;
         $hashData = "";
@@ -161,58 +161,51 @@ class  OrderController extends Controller
             }
         }
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-//        $vnpTranId = $inputData['vnp_TransactionNo'];
-//        $vnp_BankCode = $inputData['vnp_BankCode'];
-        $vnp_Amount = $inputData['vnp_Amount']/100;
+        $vnp_Amount = $inputData['vnp_Amount'] / 100;
         $order = Order::find($request->vnp_TxnRef);
-        $floatVar = floatval(preg_replace("/[^-0-9\.]/","",$order->total_price));
+        $floatVar = floatval(preg_replace("/[^-0-9\.]/", "", $order->total_price));
         try {
-            if ($secureHash == $vnp_SecureHash) {
+            if ($secureHash === $vnp_SecureHash) {
                 if ($order != NULL) {
-                    if($floatVar == $vnp_Amount)
-                    {
+                    if ($floatVar == $vnp_Amount) {
                         if ($order->payment_method != NULL && $order->payment_method == 0) {
                             if ($request->vnp_ResponseCode == '00' || $request->vnp_TransactionStatus == '00') {
-                                $order->update(['payment_method'=>1]);
+                                $order->update(['payment_method' => true]);
                                 $order->save();
                                 $returnData['RspCode'] = '00';
                                 $returnData['Message'] = 'Confirm Success';
-                                return redirect( $vnp_Url . "?" . $returnData);
+                                return $returnData;
                             } else {
                                 $Status = 2;
                             }
                         } else {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Order already confirmed';
-                            return redirect( $vnp_Url . "?" . $returnData);
+                            return $returnData;
                         }
-                    }
-                    else {
+                    } else {
                         $returnData['RspCode'] = '04';
                         $returnData['Message'] = 'invalid amount';
-                        return redirect( $vnp_Url . "?" . $returnData);
+                        return $returnData;
                     }
                 } else {
                     $returnData['RspCode'] = '01';
                     $returnData['Message'] = 'Order not found';
-                    return redirect( $vnp_Url . "?" . $returnData);
+                    return $returnData;
                 }
             } else {
                 $returnData['RspCode'] = '97';
                 $returnData['Message'] = 'Invalid signature';
-                return redirect( $vnp_Url . "?" . $returnData);
+                return $returnData;
             }
         } catch (Exception $e) {
             $returnData['RspCode'] = '99';
             $returnData['Message'] = 'Unknow error';
-            return redirect( $vnp_Url . "?" . $returnData);
         }
-        return redirect()->route('order',$order->id);
     }
-    public function testIpn($id){
+    public function testIpn($id)
+    {
         $order = Order::find($id);
-        $order->payment_method;
+        return $order;
     }
-
-
 }
