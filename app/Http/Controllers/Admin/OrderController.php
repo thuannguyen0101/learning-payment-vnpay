@@ -167,12 +167,11 @@ class  OrderController extends Controller
         $vnpTranId = $inputData['vnp_TransactionNo'];
         $vnp_BankCode = $inputData['vnp_BankCode'];
         $vnp_Amount = $inputData['vnp_Amount']/100;
+        $order = Order::find($request->vnp_TxnRef);
 
         try {
 
             if ($secureHash == $vnp_SecureHash) {
-
-                $order = Order::find($request->vnp_TxnRef);
                 $floatVar = floatval(preg_replace("/[^-0-9\.]/","",$order->total_price));
                 if ($order != NULL) {
                     if($floatVar == $vnp_Amount)
@@ -217,6 +216,11 @@ class  OrderController extends Controller
             $returnData['Message'] = 'Unknow error';
             return redirect( $vnp_Url . "?" . $returnData);
         }
+        return redirect()->route('order',$order->id);
     }
+    public function testIpn($id){
+        return Order::find($id);
+    }
+
 
 }
