@@ -211,6 +211,7 @@ class  OrderController extends Controller
     }
     public function testIpn($id){
         $order = Order::find($id);
+        $order->payment_method;
     }
 
 
