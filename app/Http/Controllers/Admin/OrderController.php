@@ -139,7 +139,8 @@ class  OrderController extends Controller
 
     public function ipnResponse(Request $request)
     {
-        Log::debug('An informational message.');
+        error_log("ipn 01", 0);
+
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_HashSecret = "ZGZKUWRMIPLAZFFGCMMRDRTQUKFOMGLS";
         $inputData = array();
@@ -154,6 +155,7 @@ class  OrderController extends Controller
         ksort($inputData);
         $i = 0;
         $hashData = "";
+        error_log("ipn 02", 0);
         foreach ($inputData as $key => $value) {
             if ($i == 1) {
                 $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
@@ -162,16 +164,23 @@ class  OrderController extends Controller
                 $i = 1;
             }
         }
+        error_log("ipn 03", 0);
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
         $vnp_Amount = $inputData['vnp_Amount'] / 100;
         $order = Order::find($request->vnp_TxnRef);
         $floatVar = floatval(preg_replace("/[^-0-9\.]/", "", $order->total_price));
+        error_log("ipn 04", 0);
         try {
             if ($secureHash === $vnp_SecureHash) {
+                error_log("ipn 05", 0);
                 if ($order != NULL) {
+                    error_log("ipn 06", 0);
                     if ($floatVar == $vnp_Amount) {
+                        error_log("ipn 07", 0);
                         if ($order->payment_method != NULL && $order->payment_method == 0) {
+                            error_log("ipn 08", 0);
                             if ($request->vnp_ResponseCode == '00' || $request->vnp_TransactionStatus == '00') {
+                                error_log("ipn 09", 0);
                                 $order->update(['payment_method' => true]);
                                 $order->save();
                                 $returnData['RspCode'] = '00';
@@ -201,6 +210,7 @@ class  OrderController extends Controller
                 return $returnData;
             }
         } catch (Exception $e) {
+            error_log("ipn 09", 0);
             $returnData['RspCode'] = '99';
             $returnData['Message'] = 'Unknow error';
         }
