@@ -177,6 +177,8 @@ class  OrderController extends Controller
                     error_log("ipn 06", 0);
                     if ($floatVar == $vnp_Amount) {
                         error_log("ipn 07", 0);
+                        error_log("ipn 7.1", 0);
+                        error_log("ipn: papayment_method-> ".$order->payment_method, 0);
                         if ($order->payment_method == NULL || $order->payment_method == 0) {
                             error_log("ipn 08", 0);
                             if ($request->vnp_ResponseCode == '00' || $request->vnp_TransactionStatus == '00') {
