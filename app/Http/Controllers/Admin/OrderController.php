@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use PayPal\Api\Payer;
 
 class  OrderController extends Controller
@@ -138,6 +139,7 @@ class  OrderController extends Controller
 
     public function ipnResponse(Request $request)
     {
+        Log::debug('An informational message.');
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_HashSecret = "ZGZKUWRMIPLAZFFGCMMRDRTQUKFOMGLS";
         $inputData = array();
