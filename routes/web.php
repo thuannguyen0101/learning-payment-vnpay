@@ -39,7 +39,6 @@ Route::get('/api/product/{id}', [ProductController::class, 'apiCheck']);
 Route::get('/login', function () {
     return view('Client.login');
 });
-// phân quản lý user trang admin
 
 
 Route::get('/test', [OrderController::class, 'test']);
